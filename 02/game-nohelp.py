@@ -6,6 +6,8 @@ from data import DICTIONARY, LETTER_SCORES, POUCH
 
 NUM_LETTERS = 7
 
+def letter_draw():
+asdf
 
 # re-use from challenge 01
 def calc_word_value(word):

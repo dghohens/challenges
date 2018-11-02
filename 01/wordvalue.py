@@ -6,8 +6,8 @@ def load_words():
     wholefile = open(DICTIONARY)
     allwords = wholefile.readlines()
     wholefile.close()
-    print('file opened')
     return allwords
+
 
 def calc_word_value(word):
     """Calculate the value of the word entered into function
@@ -20,6 +20,7 @@ def calc_word_value(word):
             val = val + LETTER_SCORES[i]
     print(word + ' = ' + str(val))
     return val
+
 
 def max_word_value(allwords):
     """Calculate the word with the max value, can receive a list
@@ -34,5 +35,6 @@ def max_word_value(allwords):
             highestWord = i
         wordVals[i]=singleVal
     return highestWord
+
 
 print(max_word_value(load_words()))
