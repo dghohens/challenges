@@ -15,19 +15,18 @@ def letter_draw():
     I might fix that later if I'm feeling up to it."""
     hand = []
     for i in range(NUM_LETTERS):
-        hand.append(POUCH[random.randrange(0,97)]
+        hand.append(POUCH[random.randrange(0,97)])
     return hand
 
-def load_words():
-    '''Load in all words from the dictionary.
-    allwords returns a list. This was reused from challenge 1'''
+'''def load_words():
     wholefile = open(DICTIONARY)
-    allwords = wholefile.readlines()
+    allWords = wholefile.readlines()
     wholefile.close()
     print('file opened')
-    return allwords
+    return allWords
+'''
 
-# re-use from challenge 01
+
 def calc_word_value(word):
     """Calc a given word value based on Scrabble LETTER_SCORES mapping"""
     val = 0
@@ -39,54 +38,77 @@ def calc_word_value(word):
     print(word + ' = ' + str(val))
     return val
 
-# re-use from challenge 01
-def max_word_value(words):
-    """Checks the maximum word value, need to fix the allwords reference"""
+def max_word_value(wordset):
+    """Checks the maximum word value"""
     wordVals = {}
     highestVal = 0
     highestWord = ''
-    for i in allwords:
+    for i in wordset:
         singleVal = calc_word_value(i)
         if singleVal > highestVal:
             highestVal = singleVal
             highestWord = i
         wordVals[i]=singleVal
-    return highestWord
+    return (highestWord, highestVal)
 
-def validate_user_input(userWord,hand,allwords):
-    """Validates that the user entered valid letters and a valid word"""
+
+def validate_user_input(userWord, hand):
+    """Validates that the user entered valid letters and a valid word.
+    Something in here is deleting the selected letters out of the global hand list.
+    I need to debug this further, but I disabled it for now to focus on the permute function problems."""
     validInput = True
     validWord = True
+    handCheck = hand
     for i in userWord:
-        if i not in hand:
+        if i not in handCheck:
             validInput = False
         else:
-            del hand[hand.index(i)]
-    if userWord not in allwords:
+            del handCheck[handCheck.index(i)]
+    if userWord.lower() not in DICTIONARY:
         validWord = False
     return (validInput, validWord)
 
 
-def permute_and_check(userWord, hand, allwords):
+def permute_and_check(hand):
     """Permute over every possible combination of letters, starting with 1 letter and going up to 7.
-    Check each iteration to make sure it's a valid word, return a list of only valid words."""
+    Check each iteration to make sure it's a valid word, return a list of only valid words.
+    Seems to only run against the last 1-3 letters right now, need to debug this section."""
     possibleWords = []
-    for i in range(1, NUM_LETTERS + 1):
-        j = list(permutations(hand[0:i],i))
-
-
+    for i in range(1, 8):
+        j = []
+        j = list(permutations(hand, i))
+        for k in j:
+            m = ''
+            for l in k:
+                m = m + l
+        if m.lower() in DICTIONARY and m.upper not in possibleWords:
+            possibleWords.append(m)
+    return possibleWords
 
 
 def main():
     """Where the magic happens. This just pulls in every other function to run the game."""
-    allwords = load_words()
     hand = letter_draw()
-    print('Letters Drawn: ' + ', '.join(hand))
-    userWord = input('Form a valid word: ')
-    userWord = userWord.upper()
-    if False in validate_user_input(userWord, hand, allwords):
-        print('Please enter a valid input next time.')
-    userVal = calc_word_value(userWord)
-    print('Word chosen: ' + userWord + ' (value: ' + str(userVal) + '')
 
+    print('Letters Drawn: ' + ', '.join(hand))
+
+    userWord = input('Form a valid word: ')
+
+#    if False in validate_user_input(userWord.upper(), hand):
+#        print('Please enter a valid input next time.')
+
+    userVal = calc_word_value(userWord)
+    print('Word chosen: ' + userWord + ' (value: ' + str(userVal) + ')')
+
+    print(hand)
+    possibleWords = permute_and_check(hand)
+    print(possibleWords)
+
+    bestWord, bestVal = max_word_value(possibleWords)
+    print('Optimal word possible: ' + bestWord + ' (value: ' + str(bestVal) + ')')
+
+    print('You scored: ' + str(userVal/bestVal))
     pass
+
+if __name__ == "__main__":
+    main()
