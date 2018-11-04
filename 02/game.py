@@ -13,9 +13,10 @@ def letter_draw():
     """Draw the number of letters at random, return a list of numbers.
     Note that this doesn't check for duplicates, so someone could end up with 2 Js or 2 Qs.
     I might fix that later if I'm feeling up to it."""
-    hand = []
+    draw = []
     for i in range(NUM_LETTERS):
-        hand.append(POUCH[random.randrange(0,97)])
+        draw.append(POUCH[random.randrange(0,97)])
+    hand = tuple(draw)
     return hand
 
 '''def load_words():
@@ -35,7 +36,6 @@ def calc_word_value(word):
             break
         else:
             val = val + LETTER_SCORES[i]
-    print(word + ' = ' + str(val))
     return val
 
 def max_word_value(wordset):
@@ -53,12 +53,10 @@ def max_word_value(wordset):
 
 
 def validate_user_input(userWord, hand):
-    """Validates that the user entered valid letters and a valid word.
-    Something in here is deleting the selected letters out of the global hand list.
-    I need to debug this further, but I disabled it for now to focus on the permute function problems."""
+    """Validates that the user entered valid letters and a valid word."""
     validInput = True
     validWord = True
-    handCheck = hand
+    handCheck = list(hand)
     for i in userWord:
         if i not in handCheck:
             validInput = False
@@ -78,11 +76,9 @@ def permute_and_check(hand):
         j = []
         j = list(permutations(hand, i))
         for k in j:
-            m = ''
-            for l in k:
-                m = m + l
-        if m.lower() in DICTIONARY and m.upper not in possibleWords:
-            possibleWords.append(m)
+            m = ''.join(k)
+            if m.lower() in DICTIONARY and m.upper not in possibleWords:
+                possibleWords.append(m)
     return possibleWords
 
 
@@ -94,16 +90,13 @@ def main():
 
     userWord = input('Form a valid word: ')
 
-#    if False in validate_user_input(userWord.upper(), hand):
-#        print('Please enter a valid input next time.')
+    if False in validate_user_input(userWord.upper(), hand):
+        print('Please enter a valid input next time.')
 
     userVal = calc_word_value(userWord)
     print('Word chosen: ' + userWord + ' (value: ' + str(userVal) + ')')
 
-    print(hand)
     possibleWords = permute_and_check(hand)
-    print(possibleWords)
-
     bestWord, bestVal = max_word_value(possibleWords)
     print('Optimal word possible: ' + bestWord + ' (value: ' + str(bestVal) + ')')
 
