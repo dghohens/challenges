@@ -53,7 +53,7 @@ class UserTweets(object):
         If you use a namedtuple get the column names with Tweet._fields.
         Otherwise define them as: id_str created_at text
         You can use writerow for the header, writerows for the rows"""
-        with open('data\\some_handle.csv', 'w+', encoding = 'utf-8', newline = '') as csvfile:
+        with open('data\\%s.csv' % handle, 'w+', encoding = 'utf-8', newline = '') as csvfile:
             tweetwriter = csv.writer(csvfile)
             tweetwriter.writerow(['id_str'] + ['created_at'] + ['text'])
             for i in self._get_tweets():
