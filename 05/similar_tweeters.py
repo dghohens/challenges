@@ -122,7 +122,6 @@ def count_words(word_list):
         if word_counts[i] > 1:
             freq_words.append(i)
 
-    print(freq_words)
     return freq_words
 
 def similar_tweeters(freq1, freq2):
@@ -137,10 +136,14 @@ def similar_tweeters(freq1, freq2):
 
 if __name__ == "__main__":
     frequent_words = {}
-    for handle in ('pybites', 'donald_codes'):
+    names = ('_juliansequeira', 'bbelderbos',)
+    for handle in (names):
         user = UserTweets(handle)
         frequent_words[handle] = count_words(break_into_words(user._get_tweets()))
-    print(frequent_words)
+
+    similarity = similar_tweeters(frequent_words[names[0]],frequent_words[names[1]])
+    print(similarity)
+
 '''
     print(frequent_words[0], '\n', frequent_words[1])
 
