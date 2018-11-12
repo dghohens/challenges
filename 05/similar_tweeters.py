@@ -123,16 +123,30 @@ def count_words(word_list):
             freq_words.append(i)
 
     print(freq_words)
-    pass
+    return freq_words
 
-def similar_tweeters(user1, user2):
-    pass
+def similar_tweeters(freq1, freq2):
+    avg_topics = (len(freq1) + len(freq2)) / 2
+    shared_topics = 0
+    for i in freq1:
+        if i in freq2:
+            shared_topics += 1
+
+    similarity_index = shared_topics / avg_topics
+    return similarity_index
 
 if __name__ == "__main__":
-    handle = 'pybites'
-    user = UserTweets(handle)
-    count_words(break_into_words(user._get_tweets()))
+    frequent_words = {}
+    for handle in ('pybites', 'donald_codes'):
+        user = UserTweets(handle)
+        frequent_words[handle] = count_words(break_into_words(user._get_tweets()))
+    print(frequent_words)
+'''
+    print(frequent_words[0], '\n', frequent_words[1])
 
+    print('The similarity index for %s and %s is:' % (handle[0], handle[1]))
+    print(similar_tweeters(frequent_words[0], frequent_words[1]))
+'''
 
 '''    if len(sys.argv) < 3:
         print('Usage: {} <user1> <user2>'.format(sys.argv[0]))
