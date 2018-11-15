@@ -1,7 +1,8 @@
 import urllib.request
 import xmlrpc.client
 import re
-import arrow
+from time import sleep
+from collections import Counter
 
 NUM_PACKS_TO_REACH = 100000
 PYPI = 'https://pypi.python.org/pypi'
@@ -31,7 +32,28 @@ def get_dates(packagelist):
     first_dates = []
     date_regex = re.compile(b'_time":"(\d\d\d\d-\d\d-\d\d)T\d\d')
     for i in packagelist:
-        a = []
+        a = ''
+        print(i)
+        try:
+            b = urllib.request.urlopen('https://www.pypi.org/pypi/%s/json' % i).read()
+            c = date_regex.findall(b)
+            a = c[0]
+            for i in c:
+                if i < a:
+                    a = i
+            print(a.decode())
+            first_dates.append(a.decode())
+        except urllib.error.HTTPError as e:
+            print(e)
+        except IndexError as f:
+            print(f)
+
+        sleep(.5)
+
+    return first_dates()
+
+def package_number_history(date_list):
+    historical_counts = dict(Counter(date_list))
 
 
 if __name__ == "__main__":
@@ -62,3 +84,4 @@ if __name__ == "__main__":
     packlist = package_list()
     print(packlist)
     print(len(packlist))
+    get_dates(packlist)
