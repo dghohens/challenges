@@ -2,7 +2,7 @@ import urllib.request
 import xmlrpc.client
 import re
 from time import sleep
-from collections import Counter
+from collections import Counter, OrderedDict
 
 NUM_PACKS_TO_REACH = 100000
 PYPI = 'https://pypi.python.org/pypi'
@@ -21,7 +21,7 @@ def package_list():
     pack_list3 = pack_list2.split(b'\n')
     pack_list4 = []
 
-    for i in pack_list3[6:-2:100]:
+    for i in pack_list3[6:-2:1000]:
         a = pack_regex.search(i)
         pack_list4.append(a.group(1).decode('utf-8'))
 
@@ -50,38 +50,27 @@ def get_dates(packagelist):
 
         sleep(.5)
 
-    return first_dates()
+    return first_dates
 
 def package_number_history(date_list):
-    historical_counts = dict(Counter(date_list))
+    total_packages = 0
+    historical_counts = {}
+    date_counts = dict(Counter(date_list))
+    ordered_date_counts = OrderedDict(sorted(date_counts.items()))
+    for i,j in ordered_date_counts.items():
+        total_packages += j
+        historical_counts[i] = total_packages
+
+    return historical_counts
 
 
 if __name__ == "__main__":
     print('PyPI hit 100,000 packages on March 4th, 2017! https://twitter.com/pybites/status/838178449999081472')
     print("Here's when we estimate PyPI will hit 200,000 packages:")
 
-
-
-    '''    current_time = arrow.utcnow()
-    print(current_time)
-    print(current_time.timestamp)
-    print(len(get_packages(current_time.timestamp)))
-    for i in range(24):
-        if current_time.month == 1:
-            current_time = current_time.replace(years=-1)
-            current_time = current_time.replace(month = 12)
-            # call package list
-            #print(current_time)
-            print(current_time.date)
-            print(len(get_packages(current_time.timestamp)))
-        else:
-            current_time = current_time.replace(month = (current_time.month - 1))
-            #call package list
-            #print(current_time)
-            print(current_time.date)
-            print(len(get_packages(current_time.timestamp)))
-    '''
     packlist = package_list()
     print(packlist)
     print(len(packlist))
-    get_dates(packlist)
+    upload_dates = get_dates(packlist)
+    running_total = package_number_history(upload_dates)
+    print(running_total)
