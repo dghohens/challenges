@@ -2,7 +2,12 @@ import urllib.request
 import xmlrpc.client
 import re
 from time import sleep
+from datetime import datetime, timedelta
 from collections import Counter, OrderedDict
+import numpy as np
+import pandas as pd
+import statsmodels.api as sm
+
 
 NUM_PACKS_TO_REACH = 100000
 PYPI = 'https://pypi.python.org/pypi'
@@ -21,7 +26,7 @@ def package_list():
     pack_list3 = pack_list2.split(b'\n')
     pack_list4 = []
 
-    for i in pack_list3[6:-2:1000]:
+    for i in pack_list3[6:-2:100]:
         a = pack_regex.search(i)
         pack_list4.append(a.group(1).decode('utf-8'))
 
@@ -63,6 +68,17 @@ def package_number_history(date_list):
 
     return historical_counts
 
+def get_epoch_times(date_list):
+    epoch = datetime(1970,1,1)
+    epoch_list = []
+    for i in date_list:
+        time_delta = (datetime.strptime(i, '%Y-%m-%d')) - epoch
+        epoch_list.append((time_delta.days * 86400 + time_delta.seconds) * 10**6 + time_delta.microseconds)
+    return epoch_list
+
+def model_history(x,y):
+    model = sm.OLS(y,x).fit()
+    return model
 
 if __name__ == "__main__":
     print('PyPI hit 100,000 packages on March 4th, 2017! https://twitter.com/pybites/status/838178449999081472')
@@ -74,3 +90,7 @@ if __name__ == "__main__":
     upload_dates = get_dates(packlist)
     running_total = package_number_history(upload_dates)
     print(running_total)
+    dates = get_epoch_times(list(running_total.keys()))
+    print(dates)
+    predict_model = model_history(dates, list(running_total.values()))
+    print(predict_model.summary())
